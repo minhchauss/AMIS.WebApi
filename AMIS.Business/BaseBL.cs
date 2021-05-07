@@ -77,6 +77,7 @@ namespace AMIS.Business
         /// <returns>Số dòng đã thêm được</returns>
         public int Update(MISAEntity entity, Guid id)
         {
+            Validate(entity);
             var rowAffect = _baseDL.Update<MISAEntity>(entity, id);
             return rowAffect;
         }
