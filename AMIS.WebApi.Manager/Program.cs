@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,15 @@ namespace AMIS.WebApi.Manager
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+               .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+               .Enrich.FromLogContext()
+               .WriteTo.File(
+               @"Logs\log.log",
+               fileSizeLimitBytes: 1_000_000,
+               rollOnFileSizeLimit: true,
+               shared: true,
+               flushToDiskInterval: TimeSpan.FromSeconds(1))
+           .CreateLogger();
 
             try
             {
