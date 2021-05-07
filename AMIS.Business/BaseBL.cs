@@ -104,6 +104,8 @@ namespace AMIS.Business
                 // Lấy ra thuộc tính băt bắt buộc
                 var attributeRequired = property.GetCustomAttributes(typeof(MISARequired), true);
                 var attributeRegexEmail = property.GetCustomAttributes(typeof(MISAValidateEmail), true);
+                var attributeDuplicate = property.GetCustomAttributes(typeof(MISADuplicate), true);
+                // Kiểm tra nhập dữ liệu hay không
                 if (attributeRequired.Length > 0)
                 {
                     // Lấy ra giá trị của property
@@ -119,6 +121,7 @@ namespace AMIS.Business
                     }
 
                 }
+                // Kiểm tra độ dài chuỗi
                 if (attributeRegexEmail.Length > 0)
                 {
                     // Lấy giá trị của property
@@ -133,6 +136,20 @@ namespace AMIS.Business
                         // Lấy ra câu thông báo lỗi
                         var msgError = (attributeRegexEmail[0] as MISAValidateEmail).MsgError;
                         throw new GuardException<MISAEntity>(msgError, entity);
+                    }
+                }
+                // Kiểm tra trùng mã
+                if (attributeDuplicate.Length > 0)
+                {
+                    // Lấy giá trị của property
+                    var propertyValue = property.GetValue(entity);
+                    // Lấy ra kiểu của property
+                    var propertyType = property.PropertyType;
+                    // Kiểm tra giá trị
+                    var entities = GetAll();
+                    foreach (var item in entities)
+                    {
+                       
                     }
                 }
             }

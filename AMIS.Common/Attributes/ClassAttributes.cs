@@ -36,4 +36,12 @@ namespace AMIS.Common.Attributes
             RegexEmail = regexEmail;
         }
     }
+    public class MISADuplicate : Attribute
+    {
+        public string MsgError = string.Empty;
+        public MISADuplicate( string msgError)
+        {
+            MsgError = msgError;
+        }
+    }
 }

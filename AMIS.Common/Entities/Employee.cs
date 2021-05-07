@@ -11,6 +11,7 @@ namespace AMIS.Common.Entities
     {
         public Guid EmployeeId { get; set; }
         [MISARequired("Mã nhân viên không được phép để trống")]
+        [MISADuplicate("Mã nhân viên đã tồn tại")]
         public string EmployeeCode { get; set; }
         [MISARequired("Tên nhân viên không được phép để trống")]
         public string FullName { get; set; }
