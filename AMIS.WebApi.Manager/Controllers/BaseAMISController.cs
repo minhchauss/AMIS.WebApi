@@ -15,7 +15,7 @@ namespace AMIS.WebApi.Manager.Controllers
     public class BaseAMISController<MISAEntity> : ControllerBase
     {
 
-        private readonly ILogger<BaseAMISController<MISAEntity>> _logger;
+        protected readonly ILogger<BaseAMISController<MISAEntity>> _logger;
 
         public BaseAMISController(ILogger<BaseAMISController<MISAEntity>> logger)
         {
@@ -25,7 +25,7 @@ namespace AMIS.WebApi.Manager.Controllers
         /// Khởi tạo interface
         /// Created by CMChau 6/5/2021
         /// </summary>
-        IBaseBL<MISAEntity> _baseBL;
+        protected IBaseBL<MISAEntity> _baseBL;
         public BaseAMISController(IBaseBL<MISAEntity> baseBL)
         {
             _baseBL = baseBL;
@@ -86,35 +86,6 @@ namespace AMIS.WebApi.Manager.Controllers
                 return StatusCode(500, msg);
             }
 
-        }
-        /// <summary>
-        /// Lấy ra danh sách theo phân trang
-        /// Created by CMChau 6/5/2021
-        /// </summary>
-        /// <param name="pageIndex">Số trang</param>
-        /// <param name="pageSize">Số bản ghi/Trang</param>
-        /// <returns></returns>
-        [HttpGet("{paging}")]
-        public IActionResult GetPaging(int pageIndex, int pageSize)
-        {
-            try
-            {
-                // Lấy ra danh sách theo phân trang
-                var entity = _baseBL.GetPaging(pageIndex, pageSize);
-                if (entity != null)
-                    return StatusCode(200, entity);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("exception", pageIndex,pageSize);
-                var msg = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
-                };
-                return StatusCode(500, msg);
-            }
         }
         /// <summary>
         /// Thêm mới 1 bản ghi
