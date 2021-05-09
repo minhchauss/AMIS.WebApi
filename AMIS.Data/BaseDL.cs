@@ -10,19 +10,32 @@ using System.Threading.Tasks;
 
 namespace AMIS.Data
 {
-   public class BaseDL:IBaseDL
+   public  class BaseDL:IBaseDL
     {
-        /// <summary>
-        /// Chuỗi kết nối đến database
-        /// Created by CMChau 6/5/2021
-        /// </summary>
-        protected string _connectionString = "" +
+        //private readonly string testc;
+        // /// <summary>
+        // /// Chuỗi kết nối đến database
+        // /// Created by CMChau 6/5/2021
+        // /// </summary>
+        protected readonly string _connectionString = "" +
        "Host=47.241.69.179;" +
        "Port=3306;" +
        "User Id=dev;" +
        "Password=12345678;" +
        "Database= 15B_MS1_61_CukCuk_CMChau";
         protected IDbConnection _dbConnection;
+
+        //protected readonly string _connectionString;
+
+        //public BaseDL(string connectionString)
+        //{
+        //    this._connectionString = connectionString;
+        //}
+
+        //public BaseDL()
+        //{
+        //}
+
         //public BaseDL(IDbConnection dbConnection)
         //{
         //    _dbConnection = dbConnection;
@@ -37,6 +50,7 @@ namespace AMIS.Data
         /// <returns>danh sách tất cả bản ghi</returns>
         public IEnumerable<MISAEntity> GetAll<MISAEntity>()
         {
+
             using ( _dbConnection = new MySqlConnection(_connectionString))
             {
                 // Lấy tên bảng
@@ -59,14 +73,19 @@ namespace AMIS.Data
         {
             using ( _dbConnection = new MySqlConnection(_connectionString))
             {
+                if(pageIndex==0&pageSize==0)
+                {
+                    pageIndex = 1;
+                    pageSize = 10;
+                }    
                 // Lấy tên bảng
                 var tableName = typeof(MISAEntity).Name;
                 // Gọi procedure
                 var sqlCommand = $"Proc_{tableName}Paging";
                 // Thêm param 
                 var parameters = new DynamicParameters();
-                parameters.Add($"m_PageIndex", pageIndex);
-                parameters.Add($"m_PageSize", pageSize);
+                parameters.Add($"m_PageIndex",pageIndex);
+                parameters.Add($"m_PageSize",pageSize);
                 // Lấy ra danh sách 
                 var Entities = _dbConnection.Query<MISAEntity>(sqlCommand, param: parameters, commandType: CommandType.StoredProcedure); ;
                 return Entities;
@@ -156,6 +175,43 @@ namespace AMIS.Data
                 // Tiến hành xóa
                 var rowEffect = _dbConnection.Execute(sqlCommnad, param: parameters, commandType: CommandType.StoredProcedure);
                 return rowEffect;
+            }
+        }
+        /// <summary>
+        /// Lấy ra danh sách mã
+        /// </summary>
+        /// <typeparam name="MISAEntity"></typeparam>
+        /// <returns>Danh sách mã</returns>
+        public IEnumerable<MISAEntity> GetCode<MISAEntity>()
+        {
+            using (_dbConnection = new MySqlConnection(_connectionString))
+            {
+                // Lấy ra tên bảng
+                var tableName = typeof(MISAEntity).Name;
+                // Gọi procedure
+                var sqlCommnad = $"Proc_Get{tableName}sCode";
+                // Tiến hành xóa
+                var entities = _dbConnection.Query<MISAEntity>(sqlCommnad, commandType: CommandType.StoredProcedure);
+                return entities;
+            }
+        }
+        /// <summary>
+        /// Lấy ra mã Code lớn nhất
+        /// CreatedBy CMChau 9/5/2021
+        /// </summary>
+        /// <typeparam name="MISAEntity"></typeparam>
+        /// <returns></returns>
+        public MISAEntity GetBiggestCode<MISAEntity>()
+        {
+            using (_dbConnection = new MySqlConnection(_connectionString))
+            {
+                // Lấy ra tên bảng
+                var tableName = typeof(MISAEntity).Name;
+                // Gọi procedure
+                var sqlCommnad = $"Proc_GetBiggest{tableName}Code";
+                // 
+                var entities = _dbConnection.QueryFirstOrDefault<MISAEntity>(sqlCommnad, commandType: CommandType.StoredProcedure);
+                return entities;
             }
         }
     }

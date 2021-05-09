@@ -39,7 +39,7 @@ namespace AMIS.Business
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Thông tin 1 bản ghi</returns>
-        public MISAEntity GetById(Guid id)
+        public virtual MISAEntity GetById(Guid id)
         {
             var entity = _baseDL.GetById<MISAEntity>(id);
             return entity;
@@ -65,6 +65,7 @@ namespace AMIS.Business
         public int Insert(MISAEntity entity)
         {
             Validate(entity);
+            ValidateDuplicate(entity);
             var rowAffect = _baseDL.Insert<MISAEntity>(entity);
             return rowAffect;
         }
@@ -91,6 +92,31 @@ namespace AMIS.Business
         {
             var rowAffect = _baseDL.DeleteById<MISAEntity>(id);
             return rowAffect;
+        }
+        /// <summary>
+        /// Lấy ra mã code lớn nhất
+        /// Created by CMChau 9/5/2021
+        /// </summary>
+        /// <returns></returns>
+        public MISAEntity GetBiggestCode()
+        {
+            var entity = _baseDL.GetBiggestCode<MISAEntity>();
+            return entity;
+        }
+        /// <summary>
+        /// Lấy ra danh sách mã
+        /// Created by CMChau 9/5/2021
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<MISAEntity> GetCode()
+        {
+            var entities = _baseDL.GetCode<MISAEntity>();
+            return entities;
+        }
+       
+        protected virtual void ValidateDuplicate(MISAEntity entity)
+        {
+
         }
         /// <summary>
         /// Validate dữ liệu
@@ -139,21 +165,30 @@ namespace AMIS.Business
                         throw new GuardException<MISAEntity>(msgError, entity);
                     }
                 }
-                // Kiểm tra trùng mã
-                if (attributeDuplicate.Length > 0)
-                {
-                    // Lấy giá trị của property
-                    var propertyValue = property.GetValue(entity);
-                    // Lấy ra kiểu của property
-                    var propertyType = property.PropertyType;
-                    // Kiểm tra giá trị
-                    var entities = GetAll();
-                    foreach (var item in entities)
-                    {
-                       
-                    }
-                }
+                //// Kiểm tra trùng mã
+                //if (attributeDuplicate.Length > 0)
+                //{
+                //    // Lấy ra giá trị của property
+                //    var propertyValue = property.GetValue(entity);
+                //    // Lấy ra kiểu của property
+                //    var propertyType = property.PropertyType;
+                //    // Kiểm tra giá trị đầu vào
+                //    var CodeList = GetCode();
+                //    var table = typeof(MISAEntity).Name;
+                //    var entityCodeName = $"{table}Code";
+                //    var typeCode = entityCodeName.GetType();
+                //    foreach (var item in CodeList)
+                //    {
+                //        if (propertyValue.ToString() == item.ToString())
+                //        {
+                //            var msgError = (attributeDuplicate[0] as MISADuplicate).MsgError;
+                //            throw new GuardException<MISAEntity>(msgError, entity);
+                //        }
+                //    }
+                //}
             }
         }
+
+       
     }
 }

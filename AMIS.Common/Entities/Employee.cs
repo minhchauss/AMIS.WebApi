@@ -33,7 +33,6 @@ namespace AMIS.Common.Entities
         public string Createdby { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime ModifiedDate { get; set; }
-        [MISARequired("Vị trí làm việc không được phép để trống")]
         public string PositionName { get; set; }
         public Guid DepartmentId { get; set; }
     }

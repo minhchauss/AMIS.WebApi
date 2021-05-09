@@ -6,29 +6,28 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace AMIS.WebApi.Manager.Controllers
 {
     [Route("api/[controller]s")]
     [ApiController]
-    public class BaseAMISController<MISAEntity> : ControllerBase
+    public class BaseAMISController<MISAEntity> :ControllerBase
     {
 
         protected readonly ILogger<BaseAMISController<MISAEntity>> _logger;
-
-        public BaseAMISController(ILogger<BaseAMISController<MISAEntity>> logger)
-        {
-            _logger = logger;
-        }
+      
         /// <summary>
         /// Khởi tạo interface
         /// Created by CMChau 6/5/2021
         /// </summary>
         protected IBaseBL<MISAEntity> _baseBL;
-        public BaseAMISController(IBaseBL<MISAEntity> baseBL)
+
+        public BaseAMISController(IBaseBL<MISAEntity> baseBL, ILogger<BaseAMISController<MISAEntity>> logger)
         {
             _baseBL = baseBL;
+            _logger = logger;
         }
         /// <summary>
         /// Lấy ra danh sách toàn bộ bản ghi
@@ -38,23 +37,28 @@ namespace AMIS.WebApi.Manager.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+
+
             try
             {
+              
                 // Lấy ra toàn bộ danh sách
                 var entities = _baseBL.GetAll();
                 if (entities.Count() > 0)
-                    return StatusCode(200, entities);
+                    return Ok( entities);
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (WebException ex)
             {
+              
                 var msg = new
                 {
                     devMsg = ex.Message,
                     userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
 
                 };
-                return StatusCode(500, msg);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
         }
         /// <summary>
@@ -68,22 +72,23 @@ namespace AMIS.WebApi.Manager.Controllers
         {
             try
             {
+                
                 // Lấy ra thông tin 1 bản ghi
                 var entity = _baseBL.GetById(id);
                 if (entity != null)
-                    return StatusCode(200, entity);
+                    return Ok(entity);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError("exception", id);
+                _logger.LogError(ex, "Function GetById has exception!");
                 var msg = new
                 {
                     devMsg = ex.Message,
                     userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
 
                 };
-                return StatusCode(500, msg);
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
 
         }
@@ -106,7 +111,7 @@ namespace AMIS.WebApi.Manager.Controllers
             }
             catch (GuardException<MISAEntity> ex)
             {
-                _logger.LogError("exception", entity);
+                _logger.LogError(ex, "exception");
                 var mes = new
                 {
                     devMsg = ex.Message,
@@ -118,12 +123,13 @@ namespace AMIS.WebApi.Manager.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "exception");
                 var msg = new
                 {
                     devMsg = ex.Message,
                     userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
                 };
-                return StatusCode(500, msg);
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
         }
         /// <summary>
@@ -146,7 +152,7 @@ namespace AMIS.WebApi.Manager.Controllers
             }
             catch (GuardException<MISAEntity> ex)
             {
-                _logger.LogError("exception", entity);
+                _logger.LogError(ex, "exception");
                 var mes = new
                 {
                     devMsg = ex.Message,
@@ -163,7 +169,7 @@ namespace AMIS.WebApi.Manager.Controllers
                     devMsg = ex.Message,
                     userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
                 };
-                return StatusCode(500, msg);
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
         }
         /// <summary>
@@ -185,13 +191,13 @@ namespace AMIS.WebApi.Manager.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("exception", id);
+                _logger.LogError(ex, "exception");
                 var msg = new
                 {
                     devMsg = ex.Message,
                     userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
                 };
-                return StatusCode(500, msg);
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
         }
     }

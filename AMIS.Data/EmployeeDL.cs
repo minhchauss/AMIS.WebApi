@@ -8,6 +8,6 @@ namespace AMIS.Data
 {
    public class EmployeeDL:BaseDL
     {
-         
+       
     }
 }

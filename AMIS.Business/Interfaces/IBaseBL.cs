@@ -14,5 +14,7 @@ namespace AMIS.Business.Interfaces
         int Insert(MISAEntity entity);
         int Update(MISAEntity entity, Guid id);
         int DeleteById(Guid id);
+        MISAEntity GetBiggestCode();
+        IEnumerable<MISAEntity> GetCode();
     }
 }

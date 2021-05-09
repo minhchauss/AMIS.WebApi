@@ -11,48 +11,50 @@ using System.Threading.Tasks;
 
 namespace AMIS.Business
 {
-   public class EmployeeBL:BaseBL<Employee>,IEmployeeBL
+    public class EmployeeBL : BaseBL<Employee>, IEmployeeBL
     {
-        public EmployeeBL(IBaseDL baseDL):base(baseDL)
+        public EmployeeBL(IBaseDL baseDL) : base(baseDL)
         {
-           
+
         }
 
         protected override void Validate(Employee entity)
         {
             base.Validate(entity);
            
-            //if (entity is Employee)
-            //{
-
-            //    //1. Kiểm tra đã nhập mã hay chưa
-            //    if (string.IsNullOrEmpty(entity.EmployeeCode))
-            //    {
-            //        throw new GuardExceptions<Customer>("Mã khách hàng không để trống", entity);
-            //    }
-            //    //2. Kiểm tra đã nhập Email hay chưa
-            //    if (string.IsNullOrEmpty(customer.Email))
-            //    {
-            //        throw new GuardExceptions<Customer>("Email không để trống", customer);
-            //    }
-            //    //3. Kiểm tra đã nhập Số điện thoại hay chưa
-            //    if (string.IsNullOrEmpty(customer.PhoneNumber))
-            //    {
-            //        throw new GuardExceptions<Customer>("Số điện thoại không để trống", customer);
-            //    }
-            //    //4. Kiểm tra đã nhập Họ tên hay chưa
-            //    if (string.IsNullOrEmpty(customer.FullName))
-            //    {
-            //        throw new GuardExceptions<Customer>("Tên khách hàng không để trống", customer);
-            //    }
-            //    //5. Kiểm tra định dạng EMail
-            //    var regexEmail = @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$";
-            //    if (!Regex.IsMatch(customer.Email, regexEmail))
-            //    {
-            //        throw new GuardExceptions<Customer>("Email không đúng định dạng, kiểm tra lại", null);
-            //    }
-            //}
-
+        }
+        /// <summary>
+        /// Validate dữ liệu của employee
+        /// Createdby CMChau 9/5/2021
+        /// </summary>
+        /// <param name="entity"></param>
+        protected override void ValidateDuplicate(Employee entity)
+        {
+            base.ValidateDuplicate(entity);
+            var properties = typeof(Employee).GetProperties();
+            foreach (var property in properties)
+            {
+                // Lấy ra thuộc tính băt bắt buộc
+                var attributeDuplicate = property.GetCustomAttributes(typeof(MISADuplicate), true);
+                // Kiểm tra trùng mã
+                if (attributeDuplicate.Length > 0)
+                {
+                    // Lấy ra giá trị của property
+                    var propertyValue = property.GetValue(entity);
+                    // Lấy ra kiểu của property
+                    var propertyType = property.PropertyType;
+                    // Kiểm tra giá trị đầu vào
+                    var CodeList = GetCode();
+                    foreach (var item in CodeList)
+                    {
+                        if (entity.EmployeeCode.ToString() == item.EmployeeCode.ToString())
+                        {
+                            var msgError = (attributeDuplicate[0] as MISADuplicate).MsgError;
+                            throw new GuardException<Employee>(msgError, entity);
+                        }
+                    }
+                }
+            }
         }
     }
 }

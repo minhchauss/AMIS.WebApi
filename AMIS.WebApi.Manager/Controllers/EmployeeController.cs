@@ -15,10 +15,13 @@ namespace AMIS.WebApi.Manager.Controllers
     [ApiController]
     public class EmployeeController : BaseAMISController<Employee>
     {
-        public EmployeeController(IEmployeeBL baseBL):base(baseBL)
+        //protected readonly ILogger<EmployeeController> _logger;
+        public EmployeeController(IEmployeeBL baseBL, ILogger<EmployeeController> logger) :base(baseBL, logger)
         {
 
         }
+
+
         /// <summary>
         /// Lấy ra danh sách theo phân trang
         /// Created by CMChau 6/5/2021
@@ -48,11 +51,34 @@ namespace AMIS.WebApi.Manager.Controllers
                 return StatusCode(500, msg);
             }
         }
-        //[HttpGet("lastestCode")]
-        //public IActionResult GetLastEmployeeCode()
-        //{
-
-        //    return Ok();
-        //}
+        [HttpGet("NewEmployeeCode")]
+        public IActionResult GetNewEmployeeCode()
+        {
+            try
+            {
+                var entity = _baseBL.GetBiggestCode();
+                if(entity!=null)
+                {
+                    var item = entity.EmployeeCode.ToString();
+                    var a = item.Split('N','V','-',' ');
+                    string res = string.Join("", a.Skip(1));
+                    int b = Int32.Parse(res);
+                    b = b + 1;
+                    item = ("NV-" + b).ToString();
+                    return StatusCode(200, item);
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("exception");
+                var msg = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
+                };
+                return StatusCode(500, msg);
+            }
+        }
     }
 }

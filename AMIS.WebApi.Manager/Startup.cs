@@ -20,6 +20,7 @@ namespace AMIS.WebApi.Manager
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,13 +31,22 @@ namespace AMIS.WebApi.Manager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:8081", "http://192.168.1.12:8081").AllowAnyHeader()
+                                                  .AllowAnyMethod();
+                                  });
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AMIS.WebApi.Manager", Version = "v1" });
             });
             services.AddScoped(typeof(IBaseBL<>), typeof(BaseBL<>));
+            //services.AddScoped<IBaseDL>(dl=>new BaseDL("Host=47.241.69.179;Port=3306;User Id=dev;Password=12345678;Database= 15B_MS1_61_CukCuk_CMChau"));
             services.AddScoped<IBaseDL, BaseDL>();
             services.AddScoped<IEmployeeBL, EmployeeBL>();
             services.AddScoped<IDepartmentBL, DepartmentBL>();
@@ -55,7 +65,7 @@ namespace AMIS.WebApi.Manager
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
