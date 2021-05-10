@@ -119,7 +119,7 @@ namespace AMIS.WebApi.Manager.Controllers
                     field = "CustomerCode",
                     data = ex.Data
                 };
-                return StatusCode(400, mes);
+                return StatusCode(StatusCodes.Status400BadRequest, mes);
             }
             catch (Exception ex)
             {
@@ -160,7 +160,7 @@ namespace AMIS.WebApi.Manager.Controllers
                     field = "CustomerCode",
                     data = ex.Data
                 };
-                return StatusCode(400, mes);
+                return StatusCode(StatusCodes.Status400BadRequest, mes);
             }
             catch (Exception ex)
             {
