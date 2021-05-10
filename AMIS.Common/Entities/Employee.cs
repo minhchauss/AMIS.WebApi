@@ -24,7 +24,7 @@ namespace AMIS.Common.Entities
         public string MobilePhoneNumber { get; set; }
         public string PhoneNumber { get; set; }
         [MISARequired("Email không được phép để trống")]
-        [MISAValidateEmail(regexEmail: @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$","Email không hợp lệ")]
+        [MISAValidateEmail(regexEmail: @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", "Email không hợp lệ")]
         public string Email { get; set; }
         public string BankAccount { get; set; }
         public string BankName { get; set; }
@@ -35,5 +35,6 @@ namespace AMIS.Common.Entities
         public DateTime ModifiedDate { get; set; }
         public string PositionName { get; set; }
         public Guid DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
     }
 }
