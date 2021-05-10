@@ -73,7 +73,7 @@ namespace AMIS.Data
         {
             using ( _dbConnection = new MySqlConnection(_connectionString))
             {
-                if(pageIndex==0&pageSize==0)
+                if(pageIndex==0||pageSize==0)
                 {
                     pageIndex = 1;
                     pageSize = 10;
