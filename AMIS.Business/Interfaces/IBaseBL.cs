@@ -16,5 +16,8 @@ namespace AMIS.Business.Interfaces
         int DeleteById(Guid id);
         MISAEntity GetBiggestCode();
         IEnumerable<MISAEntity> GetCode();
+        int GetCountByTableName();
+        IEnumerable<MISAEntity> GetPagingFilter(int pageIndex, int pageSize,string textFilter);
+        int GetCountFilter(string textFilter);
     }
 }

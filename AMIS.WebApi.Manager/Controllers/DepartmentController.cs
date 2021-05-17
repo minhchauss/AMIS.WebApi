@@ -14,13 +14,12 @@ namespace AMIS.WebApi.Manager.Controllers
     [ApiController]
     public class DepartmentController : BaseAMISController<Department>
     {
-        public DepartmentController(IDepartmentBL baseBL, ILogger<DepartmentController> logger) : base(baseBL, logger)
+        
+        private readonly IDepartmentBL _departmentBL;
+        public DepartmentController(IDepartmentBL departmentBL, ILogger<DepartmentController> logger) : base(departmentBL, logger)
         {
-
+            _departmentBL = departmentBL;
         }
-        //public DepartmentController(IDepartmentBL baseBL, ILogger<DepartmentController> logger) : base(baseBL, logger)
-        //{
 
-        //}
     }
 }

@@ -13,13 +13,16 @@ namespace AMIS.Business
 {
     public class EmployeeBL : BaseBL<Employee>, IEmployeeBL
     {
-        public EmployeeBL(IBaseDL baseDL) : base(baseDL)
+        private readonly IEmployeeDL _employeeDL;
+        public EmployeeBL(IEmployeeDL employeeDL) : base(employeeDL)
         {
-
+            _employeeDL = employeeDL;
         }
+
 
         protected override void Validate(Employee entity)
         {
+            
             base.Validate(entity);
            
         }
@@ -30,6 +33,7 @@ namespace AMIS.Business
         /// <param name="entity"></param>
         protected override void ValidateDuplicate(Employee entity)
         {
+           
             base.ValidateDuplicate(entity);
             var properties = typeof(Employee).GetProperties();
             foreach (var property in properties)

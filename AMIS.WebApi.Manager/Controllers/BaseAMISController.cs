@@ -13,11 +13,11 @@ namespace AMIS.WebApi.Manager.Controllers
 {
     [Route("api/[controller]s")]
     [ApiController]
-    public class BaseAMISController<MISAEntity> :ControllerBase
+    public class BaseAMISController<MISAEntity> : ControllerBase
     {
 
         protected readonly ILogger<BaseAMISController<MISAEntity>> _logger;
-      
+
         /// <summary>
         /// Khởi tạo interface
         /// Created by CMChau 6/5/2021
@@ -37,20 +37,16 @@ namespace AMIS.WebApi.Manager.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-
-
             try
             {
-              
                 // Lấy ra toàn bộ danh sách
                 var entities = _baseBL.GetAll();
                 if (entities.Count() > 0)
-                    return Ok( entities);
+                    return Ok(entities);
                 return NoContent();
             }
             catch (WebException ex)
             {
-              
                 var msg = new
                 {
                     devMsg = ex.Message,
@@ -72,7 +68,6 @@ namespace AMIS.WebApi.Manager.Controllers
         {
             try
             {
-                
                 // Lấy ra thông tin 1 bản ghi
                 var entity = _baseBL.GetById(id);
                 if (entity != null)
@@ -90,7 +85,30 @@ namespace AMIS.WebApi.Manager.Controllers
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
-
+        }
+        /// <summary>
+        /// Lấy tổng số bản ghi
+        /// Created by CMChau 10/5/2021
+        /// </summary>
+        /// <returns>Tổng số bản ghi</returns>
+        [HttpGet("total")]
+        public IActionResult GetTableCountData()
+        {
+            try
+            {
+                var countNumber = _baseBL.GetCountByTableName();
+                return Ok(countNumber);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "exception");
+                var msg = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
+            }
         }
         /// <summary>
         /// Thêm mới 1 bản ghi
@@ -177,7 +195,7 @@ namespace AMIS.WebApi.Manager.Controllers
         /// Created by CMChau 6/5/2021
         /// </summary>
         /// <param name="id">Id của bản ghi</param>
-        /// <returns></returns>
+        /// <returns>Số dòng đã xóa được</returns>
         [HttpDelete("{id}")]
         public IActionResult DeleteById(Guid id)
         {
@@ -188,6 +206,66 @@ namespace AMIS.WebApi.Manager.Controllers
                 if (rowAffect > 0)
                     return Ok();
                 return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "exception");
+                var msg = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
+            }
+        }
+        /// <summary>
+        /// Lấy danh sách lọc theo phân trang
+        /// Created by CMChau 13/5/2021
+        /// </summary>
+        /// <param name="pageIndex">Trang hiện tại</param>
+        /// <param name="pageSize">Số bản ghi trong 1 trang</param>
+        /// <param name="textFilter">Chuỗi cần lọc</param>
+        /// <returns>Danh sách lọc theo phân trang</returns>
+        [HttpGet("paging/filter")]
+        public IActionResult GetPagingFilter(int pageIndex, int pageSize, string textFilter)
+        {
+            try
+            {
+                var entities = _baseBL.GetPagingFilter(pageIndex, pageSize, textFilter);
+                if (entities.Count() > 0)
+                    return Ok(entities);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "exception");
+                var msg = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
+            }
+        }
+
+        [HttpGet("totalFilter")]
+        public IActionResult GetTotalFilter(string textFilter)
+        {
+            try
+            {
+                if (textFilter == null || textFilter == "")
+                {
+                    var countNumber = _baseBL.GetCountByTableName();
+                    return Ok(countNumber);
+                }
+                else
+                if (textFilter != null || textFilter != "")
+                {
+                    var totalFilter = _baseBL.GetCountFilter(textFilter);
+                    return Ok(totalFilter);
+                }
+                return NoContent();
+
             }
             catch (Exception ex)
             {

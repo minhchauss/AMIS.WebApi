@@ -23,8 +23,8 @@ namespace AMIS.Common.Entities
         public string IdentityPlace { get; set; }
         public string MobilePhoneNumber { get; set; }
         public string PhoneNumber { get; set; }
-        [MISARequired("Email không được phép để trống")]
-        [MISAValidateEmail(regexEmail: @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", "Email không hợp lệ")]
+        //[MISARequired("Email không được phép để trống")]
+        //[MISAValidateEmail(regexEmail: @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", "Email không hợp lệ")]
         public string Email { get; set; }
         public string BankAccount { get; set; }
         public string BankName { get; set; }

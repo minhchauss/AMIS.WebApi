@@ -47,9 +47,11 @@ namespace AMIS.WebApi.Manager
             });
             services.AddScoped(typeof(IBaseBL<>), typeof(BaseBL<>));
             //services.AddScoped<IBaseDL>(dl=>new BaseDL("Host=47.241.69.179;Port=3306;User Id=dev;Password=12345678;Database= 15B_MS1_61_CukCuk_CMChau"));
-            services.AddScoped<IBaseDL, BaseDL>();
+            //services.AddScoped<IBaseDL, BaseDL>();
             services.AddScoped<IEmployeeBL, EmployeeBL>();
             services.AddScoped<IDepartmentBL, DepartmentBL>();
+            services.AddScoped<IDepartmentDL, DepartmentDL>();
+            services.AddScoped<IEmployeeDL, EmployeeDL>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using AMIS.Common.Entities;
+using AMIS.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AMIS.Data
 {
-    public class DepartmentDL : BaseDL
+    public class DepartmentDL : BaseDL,IDepartmentDL
     {
       
     }

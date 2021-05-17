@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AMIS.Data.Interfaces
 {
-   public interface IBaseDL
+    public interface IBaseDL
     {
         IEnumerable<MISAEntity> GetAll<MISAEntity>();
         IEnumerable<MISAEntity> GetPaging<MISAEntity>(int pageIndex, int pageSize);
@@ -16,5 +16,8 @@ namespace AMIS.Data.Interfaces
         int DeleteById<MISAEntity>(Guid id);
         MISAEntity GetBiggestCode<MISAEntity>();
         IEnumerable<MISAEntity> GetCode<MISAEntity>();
+        int GetCountByTableName<MISAEntity>();
+        IEnumerable<MISAEntity> GetPagingFilter<MISAEntity>(int paggIndex, int pageSize,string textFilter);
+        int GetCountFilter<MISAEntity>(string textFilter);
     }
 }

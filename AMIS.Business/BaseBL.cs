@@ -27,7 +27,7 @@ namespace AMIS.Business
         /// Lấy danh sách toàn bộ bản ghi
         /// Created by CMChau 6/5/2021
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Danh sách bản ghi</returns>
         public IEnumerable<MISAEntity> GetAll()
         {
             var entities = _baseDL.GetAll<MISAEntity>();
@@ -37,7 +37,7 @@ namespace AMIS.Business
         /// Lấy thông tin của 1 bản ghi
         /// Created by CMChau 6/5/2021
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">id của đối tượng</param>
         /// <returns>Thông tin 1 bản ghi</returns>
         public virtual MISAEntity GetById(Guid id)
         {
@@ -56,6 +56,17 @@ namespace AMIS.Business
             var entities = _baseDL.GetPaging<MISAEntity>(pageIndex, pageSize);
             return entities;
         }
+        /// <summary>
+        /// Lấy ra tổng số bản ghi
+        /// Created by CMChau 10/5/2021
+        /// </summary>
+        /// <returns>Tổng số bản ghi</returns>
+        public int GetCountByTableName()
+        {
+            var countNumber = _baseDL.GetCountByTableName<MISAEntity>();
+            return countNumber;
+        }
+
         /// <summary>
         /// Thêm mới bản ghi
         /// Created by CMChau 6/5/2021
@@ -97,7 +108,7 @@ namespace AMIS.Business
         /// Lấy ra mã code lớn nhất
         /// Created by CMChau 9/5/2021
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Mã code lớn nhất</returns>
         public MISAEntity GetBiggestCode()
         {
             var entity = _baseDL.GetBiggestCode<MISAEntity>();
@@ -107,13 +118,25 @@ namespace AMIS.Business
         /// Lấy ra danh sách mã
         /// Created by CMChau 9/5/2021
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Danh sách mã</returns>
         public IEnumerable<MISAEntity> GetCode()
         {
             var entities = _baseDL.GetCode<MISAEntity>();
             return entities;
         }
-       
+        /// <summary>
+        /// Lấy danh sách lọc
+        /// Created by CMChau 13/5/2021
+        /// </summary>
+        /// <param name="pageIndex">Trang hiện tại</param>
+        /// <param name="pageSize">Số bản ghi trong 1 trang</param>
+        /// <param name="textFilter">Chuỗi cần lọc</param>
+        /// <returns>Danh sách lọc theo phân trang</returns>
+        public IEnumerable<MISAEntity>GetPagingFilter(int pageIndex,int pageSize , string textFilter)
+        {
+            var entities = _baseDL.GetPagingFilter<MISAEntity>(pageIndex, pageSize, textFilter);
+            return entities;
+        }
         protected virtual void ValidateDuplicate(MISAEntity entity)
         {
 
@@ -189,6 +212,10 @@ namespace AMIS.Business
             }
         }
 
-       
+        public int GetCountFilter(string textFilter)
+        {
+            var entity = _baseDL.GetCountFilter<MISAEntity>(textFilter);
+            return entity;
+        }
     }
 }

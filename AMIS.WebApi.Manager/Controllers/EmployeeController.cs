@@ -1,5 +1,7 @@
-﻿using AMIS.Business.Interfaces;
+﻿using AMIS.Business.Exceptions;
+using AMIS.Business.Interfaces;
 using AMIS.Common.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,14 +13,16 @@ using System.Threading.Tasks;
 
 namespace AMIS.WebApi.Manager.Controllers
 {
+   
     [Route("api/v1/[controller]s")]
     [ApiController]
     public class EmployeeController : BaseAMISController<Employee>
     {
+        private readonly IEmployeeBL _employeeBL;
         //protected readonly ILogger<EmployeeController> _logger;
-        public EmployeeController(IEmployeeBL baseBL, ILogger<EmployeeController> logger) :base(baseBL, logger)
+        public EmployeeController(IEmployeeBL employeeBL, ILogger<EmployeeController> logger) :base(employeeBL, logger)
         {
-
+            _employeeBL = employeeBL;
         }
 
 
@@ -28,35 +32,60 @@ namespace AMIS.WebApi.Manager.Controllers
         /// </summary>
         /// <param name="pageIndex">Số trang</param>
         /// <param name="pageSize">Số bản ghi/Trang</param>
-        /// <returns></returns>
+        /// <returns>danh sách lấy theo phân trang</returns>
         [HttpGet("paging")]
         public IActionResult GetPaging(int pageIndex, int pageSize)
         {
             try
             {
+                if (pageIndex <= 0)
+                    throw new GuardException<int>("pageIndex can lon hon 0", pageIndex);
+
+                if (pageSize < 0)
+                    throw new GuardException<int>("pageSize can lon hon 0", pageSize);
+
+                pageSize = pageSize > 100 ? 100 : pageSize;
+
                 // Lấy ra danh sách theo phân trang
-                var entity = _baseBL.GetPaging(pageIndex, pageSize);
+                var entity = _employeeBL.GetPaging(pageIndex, pageSize);
                 if (entity != null)
                     return StatusCode(200, entity);
                 return NoContent();
             }
+            catch (GuardException<int> ex)
+            {
+                _logger.LogError(ex, "exception");
+                var mes = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = "Dữ liệu không hợp lệ",
+                    field = "PageInfo",
+                    data = ex.Data
+                };
+                return StatusCode(StatusCodes.Status400BadRequest, mes);
+            }
             catch (Exception ex)
             {
-                _logger.LogError("exception", pageIndex, pageSize);
+                _logger.LogError(ex,"exception",ex.Data);
+
                 var msg = new
                 {
                     devMsg = ex.Message,
                     userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
                 };
-                return StatusCode(500, msg);
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
         }
+        /// <summary>
+        /// Lấy ra mã mới nhất
+        /// </summary>
+        /// <returns>Mã mới nhất tự động tăng</returns>
         [HttpGet("NewEmployeeCode")]
         public IActionResult GetNewEmployeeCode()
         {
             try
             {
-                var entity = _baseBL.GetBiggestCode();
+                var entity = _employeeBL.GetBiggestCode();
                 if(entity!=null)
                 {
                     var item = entity.EmployeeCode.ToString();
@@ -71,14 +100,15 @@ namespace AMIS.WebApi.Manager.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("exception");
+                _logger.LogError("exception", ex);
                 var msg = new
                 {
                     devMsg = ex.Message,
                     userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
                 };
-                return StatusCode(500, msg);
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
         }
+        
     }
 }

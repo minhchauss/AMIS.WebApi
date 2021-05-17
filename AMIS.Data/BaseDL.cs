@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace AMIS.Data
 {
-   public  class BaseDL:IBaseDL
+    public class BaseDL : IBaseDL
     {
-        //private readonly string testc;
-        // /// <summary>
-        // /// Chuỗi kết nối đến database
-        // /// Created by CMChau 6/5/2021
-        // /// </summary>
+
+        /// <summary>
+        /// Chuỗi kết nối đến database
+        /// Created by CMChau 6/5/2021
+        /// </summary>
         protected readonly string _connectionString = "" +
        "Host=47.241.69.179;" +
        "Port=3306;" +
@@ -51,7 +51,7 @@ namespace AMIS.Data
         public IEnumerable<MISAEntity> GetAll<MISAEntity>()
         {
 
-            using ( _dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new MySqlConnection(_connectionString))
             {
                 // Lấy tên bảng
                 var tableName = typeof(MISAEntity).Name;
@@ -71,21 +71,16 @@ namespace AMIS.Data
         /// <returns></returns>
         public IEnumerable<MISAEntity> GetPaging<MISAEntity>(int pageIndex, int pageSize)
         {
-            using ( _dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new MySqlConnection(_connectionString))
             {
-                if(pageIndex==0||pageSize==0)
-                {
-                    pageIndex = 1;
-                    pageSize = 10;
-                }    
                 // Lấy tên bảng
                 var tableName = typeof(MISAEntity).Name;
                 // Gọi procedure
                 var sqlCommand = $"Proc_{tableName}Paging";
                 // Thêm param 
                 var parameters = new DynamicParameters();
-                parameters.Add($"m_PageIndex",pageIndex);
-                parameters.Add($"m_PageSize",pageSize);
+                parameters.Add($"m_PageIndex", pageIndex);
+                parameters.Add($"m_PageSize", pageSize);
                 // Lấy ra danh sách 
                 var Entities = _dbConnection.Query<MISAEntity>(sqlCommand, param: parameters, commandType: CommandType.StoredProcedure); ;
                 return Entities;
@@ -99,7 +94,7 @@ namespace AMIS.Data
         /// <returns>Thông tin của 1 bản ghi</returns>
         public MISAEntity GetById<MISAEntity>(Guid id)
         {
-            using ( _dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new MySqlConnection(_connectionString))
             {
                 // Lấy tên bảng
                 var tableName = typeof(MISAEntity).Name;
@@ -121,7 +116,7 @@ namespace AMIS.Data
         /// <returns>Số dòng đã thêm được</returns>
         public int Insert<MISAEntity>(MISAEntity entity)
         {
-            using ( _dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new MySqlConnection(_connectionString))
             {
                 // Lấy ra tên bảng
                 var tableName = typeof(MISAEntity).Name;
@@ -140,7 +135,7 @@ namespace AMIS.Data
         /// <returns>Số dòng đã update được</returns>
         public int Update<MISAEntity>(MISAEntity entity, Guid id)
         {
-            using ( _dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new MySqlConnection(_connectionString))
             {
                 // Lấy ra tên bảng
                 var tableName = typeof(MISAEntity).Name;
@@ -163,7 +158,7 @@ namespace AMIS.Data
         /// <returns>Số dòng đã xóa được</returns>
         public int DeleteById<MISAEntity>(Guid id)
         {
-            using ( _dbConnection = new MySqlConnection(_connectionString))
+            using (_dbConnection = new MySqlConnection(_connectionString))
             {
                 // Lấy ra tên bảng
                 var tableName = typeof(MISAEntity).Name;
@@ -203,6 +198,7 @@ namespace AMIS.Data
         /// <returns></returns>
         public MISAEntity GetBiggestCode<MISAEntity>()
         {
+
             using (_dbConnection = new MySqlConnection(_connectionString))
             {
                 // Lấy ra tên bảng
@@ -214,5 +210,77 @@ namespace AMIS.Data
                 return entities;
             }
         }
+        /// <summary>
+        /// Lấy ra tổng số bản ghi
+        /// Created By CMChau 10/5/2021
+        /// </summary>
+        /// <typeparam name="MISAEntity"></typeparam>
+        /// <returns></returns>
+        public int GetCountByTableName<MISAEntity>()
+        {
+
+            using (_dbConnection = new MySqlConnection(_connectionString))
+            {
+                // Lấy ra tên bảng
+                var tableName = typeof(MISAEntity).Name;
+                // Gọi procedure
+                var sqlCommnad = $"Proc_GetCount{tableName}s";
+                // 
+                var countNumber = _dbConnection.QueryFirstOrDefault<int>(sqlCommnad, commandType: CommandType.StoredProcedure);
+                return countNumber;
+            }
+        }
+        /// <summary>
+        /// Lấy danh sách theo phân trang sau khi lọc
+        /// Created By CMChau 13/5/2021
+        /// </summary>
+        /// <typeparam name="MISAEntity"></typeparam>
+        /// <param name="pageIndex">Trang hiện tại</param>
+        /// <param name="pageSize">Số bản ghi trong 1 trang</param>
+        /// <param name="textFilter">Chuỗi cần lọc</param>
+        /// <returns>Danh sách đã lọc theo phân trang</returns>
+        public IEnumerable<MISAEntity> GetPagingFilter<MISAEntity>(int pageIndex, int pageSize, string textFilter)
+        {
+            using (_dbConnection = new MySqlConnection(_connectionString))
+            {
+                if (textFilter.Length == 0)
+                    return GetPaging<MISAEntity>(pageIndex, pageSize);
+                else
+                {
+                    // Lấy ra tên bảng
+                    var tableName = typeof(MISAEntity).Name;
+                    // Gọi procedure
+                    var sqlCommnad = $"Proc_Get{tableName}PagingFilter";
+                    var parameters = new DynamicParameters();
+                    parameters.Add($"m_PageIndex", pageIndex);
+                    parameters.Add($"m_PageSize", pageSize);
+                    parameters.Add($"fullName", textFilter);
+                    parameters.Add($"{tableName}Code", textFilter);
+                    parameters.Add($"phoneNumber", textFilter);
+                    var entities = _dbConnection.Query<MISAEntity>(sqlCommnad,param:parameters, commandType: CommandType.StoredProcedure);
+                    return entities;
+                }
+            }
+        }
+
+        public int GetCountFilter<MISAEntity>(string textFilter)
+        {
+            using (_dbConnection = new MySqlConnection(_connectionString))
+            {
+                // Lấy ra tên bảng
+                var tableName = typeof(MISAEntity).Name;
+                // Gọi procedure
+                var sqlCommnad = $"Proc_GetCount{tableName}sFilter";
+                //Truyền param
+                var parameters = new DynamicParameters();
+                parameters.Add($"fullName", textFilter);
+                parameters.Add($"phoneNumber", textFilter);
+                parameters.Add($"{tableName}Code", textFilter);
+                var countNumber = _dbConnection.QueryFirstOrDefault<int>(sqlCommnad,param:parameters, commandType: CommandType.StoredProcedure);
+                return countNumber;
+            }
+        }
+
+
     }
 }
