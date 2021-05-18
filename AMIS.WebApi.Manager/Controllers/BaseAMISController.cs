@@ -1,5 +1,6 @@
 ﻿using AMIS.Business.Exceptions;
 using AMIS.Business.Interfaces;
+using AMIS.Common.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -266,6 +267,43 @@ namespace AMIS.WebApi.Manager.Controllers
                 }
                 return NoContent();
 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "exception");
+                var msg = new
+                {
+                    devMsg = ex.Message,
+                    userMsg = "Có lỗi xảy ra vui lòng liên hệ với MISA để được trợ giúp"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, msg);
+            }
+        }
+        /// <summary>
+        /// Lấy danh sách đã lọc và tổng số bản ghi
+        /// </summary>
+        /// <param name="pageIndex">Số trang</param>
+        /// <param name="pageSize">Số phần tử/trang</param>
+        /// <param name="textFilter">Từ khóa cần lọc</param>
+        /// <returns>Tổng số bản ghi đã lọc và danh sách bản ghi</returns>
+        [HttpGet("paging")]
+        public virtual IActionResult GetResultPaging(int pageIndex, int pageSize, string textFilter)
+        {
+            try
+            {
+                var pageResult = new PageResult<MISAEntity>();
+                if (textFilter == null || textFilter == "")
+                {
+                    pageResult.CountList = _baseBL.GetCountByTableName();
+                    pageResult.Items = _baseBL.GetPaging(pageIndex, pageSize);
+                    return Ok(pageResult);
+                }
+                else
+                {
+                    pageResult.CountList = _baseBL.GetCountFilter(textFilter);
+                    pageResult.Items = _baseBL.GetPagingFilter(pageIndex, pageSize, textFilter);
+                    return Ok(pageResult);
+                }
             }
             catch (Exception ex)
             {

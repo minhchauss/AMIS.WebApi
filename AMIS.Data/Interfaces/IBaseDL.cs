@@ -19,5 +19,6 @@ namespace AMIS.Data.Interfaces
         int GetCountByTableName<MISAEntity>();
         IEnumerable<MISAEntity> GetPagingFilter<MISAEntity>(int paggIndex, int pageSize,string textFilter);
         int GetCountFilter<MISAEntity>(string textFilter);
+
     }
 }

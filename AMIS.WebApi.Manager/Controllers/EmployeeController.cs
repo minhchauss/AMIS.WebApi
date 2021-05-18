@@ -109,6 +109,18 @@ namespace AMIS.WebApi.Manager.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, msg);
             }
         }
-        
+        /// <summary>
+        /// Lấy ra danh sách nhân viên và số lượng theo phân trang
+        /// </summary>
+        /// <param name="pageIndex">Số trang</param>
+        /// <param name="pageSize">Số bản ghi/trang</param>
+        /// <param name="textFilter">Từ khóa lọc</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("~/api/v2/[controller]s/paging/filter")]
+        public override IActionResult GetResultPaging(int pageIndex, int pageSize, string textFilter)
+        {
+            return base.GetResultPaging(pageIndex, pageSize, textFilter);
+        }
     }
 }

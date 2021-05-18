@@ -36,7 +36,7 @@ namespace AMIS.WebApi.Manager
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
-                                      builder.WithOrigins("http://localhost:8081", "http://192.168.1.12:8081").AllowAnyHeader()
+                                      builder.WithOrigins("http://localhost:8081", "http://192.168.1.12:8081", "http://localhost:8080").AllowAnyHeader()
                                                   .AllowAnyMethod();
                                   });
             });
